@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    environment:
+      - TZ=Europe/Moscow
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    # links:
+    #   - db
+    ports:
+      - "3000:3000"
+    command: npm run start:dev
+    restart: always
+
+  db:
+    container_name: postgres-kinopoisk
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${TYPEORM_USERNAME}
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_DB=${TYPEORM_DB}
+      - TZ=Europe/Moscow
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - ${TYPEORM_PORT}:${TYPEORM_PORT}
+
+  redis:
+    image: redis:latest
+    volumes:
+      - ./redis:/data
+    ports:
+      - 6379:6379
