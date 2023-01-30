@@ -14,8 +14,8 @@ services:
       - /app/node_modules
     depends_on:
       - db
-    # links:
-    #   - db
+    links:
+      - db
     ports:
       - "3000:3000"
     command: npm run start:dev
